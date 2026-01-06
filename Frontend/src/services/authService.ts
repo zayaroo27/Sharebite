@@ -18,12 +18,8 @@ export type RegisterInput = {
 export async function login(input: LoginInput): Promise<AuthSession> {
   const baseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined
 
-  // If backend isn't configured yet, fall back to a demo session.
   if (!baseUrl) {
-    return {
-      token: 'demo-token',
-      user: { role: input.roleHint ?? 'DONOR' },
-    }
+    throw new Error('API base URL is not configured. Set VITE_API_BASE_URL in your .env file.')
   }
 
   // Expected Spring Boot endpoint shape (adjust later to your backend contract)
@@ -36,8 +32,9 @@ export async function login(input: LoginInput): Promise<AuthSession> {
 export async function register(input: RegisterInput): Promise<void> {
   const baseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined
 
-  // Demo-only: pretend success when backend isn't configured.
-  if (!baseUrl) return
+  if (!baseUrl) {
+    throw new Error('API base URL is not configured. Set VITE_API_BASE_URL in your .env file.')
+  }
 
   await apiFetch<void>('/auth/register', {
     method: 'POST',

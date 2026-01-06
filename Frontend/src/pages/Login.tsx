@@ -15,21 +15,28 @@ export function Login() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [roleHint, setRoleHint] = useState<Role>('DONOR')
+  // const [roleHint, setRoleHint] = useState<Role>('DONOR')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setIsSubmitting(true)
 
+    if (demoMode) {
+      show('Backend not configured. Set VITE_API_BASE_URL to enable login.', 'error')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
-      const session = await authService.login({ email, password, roleHint })
+      const session = await authService.login({ email, password,  /* role: roleHint */ })
       login(session.token, session.user.role)
 
       show('Login successful', 'success')
       navigate(defaultRouteForRole(session.user.role), { replace: true })
-    } catch {
-      show('Login failed. Please try again.', 'error')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Login failed. Please try again.'
+      show(message, 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -42,7 +49,7 @@ export function Login() {
 
       {demoMode ? (
         <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Demo mode: backend not configured (set `VITE_API_BASE_URL` later).
+          Backend not configured. Set VITE_API_BASE_URL to enable login.
         </div>
       ) : null}
 
@@ -71,7 +78,7 @@ export function Login() {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">Role</label>
           <select
             value={roleHint}
@@ -83,11 +90,11 @@ export function Login() {
             
           </select>
           <p className="mt-1 text-xs text-gray-500">Used for demo mode until backend login is connected.</p>
-        </div>
+        </div> */}
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || demoMode}
           className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
         >
           {isSubmitting ? 'Logging in...' : 'Login'}
