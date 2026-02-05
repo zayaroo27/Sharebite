@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sharebite
+    username: sharebite_user
+    password: sharebite123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  jwt:
+    secret: change_this_secret_key_please_make_it_long_enough_12345
+    expiration: 86400000
+
+server:
+  port: 8080
